@@ -1,2 +1,4 @@
 # sun-burst
-Drawing sun burst diagrams
+
+## Develop
+ghcid -c="stack ghci sun-burst:lib sun-burst:test:sun-burst-test" -T=main
