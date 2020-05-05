@@ -1,6 +1,16 @@
 {-# LANGUAGE EmptyDataDecls #-}
 module SvgElements
     ( Point(..)
+    , Offset(..)
+    , Element(..)
+    , Circle(..)
+    , Text(..)
+    , Path(..)
+    , PathData(..)
+    , Move(..)
+    , Line(..)
+    , Arc(..)
+    , Close(..)
     , polarToCartesian
     ) where
 
@@ -29,9 +39,9 @@ data Element
     | EText Text
     | EPath Path
 
+-- center at origin
 data Circle = Circle
-    { circleCenter :: Point
-    , circleRadius :: Radius
+    { circleRadius :: Radius
     }
 
 data Text = Text
@@ -108,6 +118,6 @@ sectorElements sector@(L.Sector label start end) = [EPath path]
 
 centerElements :: L.Center -> [Element]
 centerElements (L.Center label radius) =
-    [ ECircle $ Circle (Point (Tagged 0) (Tagged 0)) (Tagged (unTagged radius))
+    [ ECircle $ Circle (Tagged (unTagged radius))
     , EText $ Text label (Point (Tagged 0) (Tagged 0)) Nothing
     ]

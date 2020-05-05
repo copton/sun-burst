@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 81342de4f577e01809cc46260988d260e3d6a815500ab1a630fbfeefa9fc282b
+-- hash: faf4be6aeb67074eaa5ae0730606d12bbc233a4393d761a3ce5567ae805a4ee5
 
 name:           sun-burst
 version:        0.1.0.0
@@ -30,6 +30,7 @@ library
       Layout
       Model
       SvgElements
+      SvgXml
   other-modules:
       Paths_sun_burst
   hs-source-dirs:
