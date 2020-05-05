@@ -97,7 +97,7 @@ sectorElements sector@(L.Sector label start end) = [EPath path]
                                (polarToCartesian (L.PolarCoordinates
                                     (L.polarAngle end) (L.polarRadius start)))
                                 (largeArcFlag sector)
-                                False
+                                True
         line     = PDLine $ Line $ polarToCartesian end
         outerArc = PDArc $ Arc (Tagged $ unTagged $ L.polarRadius end)
                                (polarToCartesian (L.PolarCoordinates
