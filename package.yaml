@@ -53,3 +53,4 @@ tests:
     - tasty == 1.2.*
     - tasty-hunit == 0.10.*
     - text == 1.2.*
+    - tagged == 0.8.*

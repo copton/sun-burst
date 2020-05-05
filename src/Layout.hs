@@ -29,8 +29,8 @@ data LayerTag
 type Layer = Tagged LayerTag Int
 
 data PolarCoordinates = PolarCoordinates
-    { alpha  :: Angle
-    , radius :: Radius
+    { polarAngle  :: Angle
+    , polarRadius :: Radius
     } deriving (Show, Eq, Ord)
 
 data Center = Center
@@ -39,9 +39,9 @@ data Center = Center
     } deriving (Show, Eq)
 
 data Sector = Sector
-    { label :: T.Text
-    , start :: PolarCoordinates
-    , end   :: PolarCoordinates
+    { sectorLabel :: T.Text
+    , sectorStart :: PolarCoordinates
+    , sectorEnd   :: PolarCoordinates
     } deriving (Show, Eq, Ord)
 
 data SunBurst = SunBurst

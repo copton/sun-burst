@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a1363916e6dab28e535ac3a86514c46a44bc8ea1f2dd25267c835434ac372ff2
+-- hash: 81342de4f577e01809cc46260988d260e3d6a815500ab1a630fbfeefa9fc282b
 
 name:           sun-burst
 version:        0.1.0.0
@@ -28,8 +28,8 @@ source-repository head
 library
   exposed-modules:
       Layout
-      Lib
       Model
+      SvgElements
   other-modules:
       Paths_sun_burst
   hs-source-dirs:
@@ -59,6 +59,7 @@ test-suite sun-burst-test
   other-modules:
       TestLayout
       TestModel
+      TestSvgElements
       Paths_sun_burst
   hs-source-dirs:
       test
@@ -66,6 +67,7 @@ test-suite sun-burst-test
   build-depends:
       base >=4.7 && <5
     , sun-burst
+    , tagged ==0.8.*
     , tasty ==1.2.*
     , tasty-hunit ==0.10.*
     , text ==1.2.*
