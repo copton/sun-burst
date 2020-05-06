@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: faf4be6aeb67074eaa5ae0730606d12bbc233a4393d761a3ce5567ae805a4ee5
+-- hash: faf6d291b8d2269392752d5198e307a018bd4552f32b12366dae2b0825fdc026
 
 name:           sun-burst
 version:        0.1.0.0
@@ -36,7 +36,8 @@ library
   hs-source-dirs:
       src
   build-depends:
-      base >=4.7 && <5
+      HaXml ==1.25.*
+    , base >=4.7 && <5
     , mtl ==2.2.*
     , tagged ==0.8.*
     , text ==1.2.*
@@ -50,7 +51,8 @@ executable sun-burst-exe
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HaXml ==1.25.*
+    , base >=4.7 && <5
     , sun-burst
   default-language: Haskell2010
 
