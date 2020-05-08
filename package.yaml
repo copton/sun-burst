@@ -40,7 +40,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - sun-burst
-    - HaXml == 1.25.*
+    - tagged == 0.8.*
+    - text == 1.2.*
 
 tests:
   sun-burst-test:

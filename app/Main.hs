@@ -1,13 +1,31 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Text.XML.HaXml as X
-import Text.XML.HaXml.Pretty as P
+import Model
+import Layout
+import SvgElements
+import SvgXml
+
+import Data.Tagged (Tagged(Tagged))
+import qualified Data.Text as T
+
+model :: RootNode
+model = RootNode $ Node "center" (Tagged 100) []
+
+config :: Config
+config = Config $ Tagged 20
+
+sunBurst :: SunBurst
+sunBurst = layout config model
+
+elements :: [Element]
+elements = sunBurstElements sunBurst
+
+xmlString :: String
+xmlString = toXml elements
 
 main :: IO ()
 main = do
-    xml <- readFile "example.svg"
-    let d1 = X.xmlParse "example.svg" xml
-    let d2 = P.document d1
-    let d3 = X.render d2
---    doc <- X.readFile def "example.svg"
-    putStr d3
+    case assertRootNodeConsistency model of
+        Left x -> error (T.unpack x)
+        Right () -> putStr xmlString

@@ -1,6 +1,7 @@
 {-# LANGUAGE EmptyDataDecls #-}
 module SvgElements
-    ( Point(..)
+    ( sunBurstElements
+    , Point(..)
     , Offset(..)
     , Element(..)
     , Circle(..)
