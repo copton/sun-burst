@@ -5,6 +5,7 @@ module SvgXml
 
 import qualified SvgElements as E
 
+import Data.List (intercalate)
 import Data.Tagged (Tagged(Tagged, unTagged))
 import Text.XML.HaXml.Types
 import Text.XML.HaXml.Pretty (document)
@@ -50,6 +51,7 @@ element :: E.Element -> Content ()
 element = \case
     E.ECircle x -> CElem (elemCircle x) ()
     E.EText x -> CElem (elemText x) ()
+    E.EPath x -> CElem (elemPath x) ()
 
 elemCircle :: E.Circle -> Element ()
 elemCircle (E.Circle (Tagged r)) =
@@ -64,12 +66,43 @@ elemCircle (E.Circle (Tagged r)) =
 
 elemText :: E.Text -> Element ()
 elemText (E.Text txt (E.Point (Tagged x) (Tagged y)) Nothing) =
-        Elem (N "text") [x', y', t] [CString False (T.unpack txt) ()]
+        Elem (N "text") [x', y', a, t] [CString False (T.unpack txt) ()]
     where
         x' = attr "x" (show $ fromRational x)
         y' = attr "y" (show $ fromRational y)
         a = attr "text-anchor" "middle"
         t = attr "transform" "scale(1, -1)"
+
+elemPath :: E.Path -> Element ()
+elemPath (E.Path pd) =
+        Elem (N "path") [s, sw, f, d] []
+    where
+        s = attr "stroke" "black"
+        sw = attr "stroke-width" "1"
+        f = attr "fill" "none"
+        d = attr "d" $ intercalate " " $ map pathData pd
+
+pathData :: E.PathData -> String
+pathData = \case
+        E.PDMove (E.Move (E.Point (Tagged x) (Tagged y))) ->
+            intercalate " "
+                ["M", show (fromRational x), show (fromRational y)]
+
+        E.PDLine (E.Line (E.Point (Tagged x) (Tagged y))) ->
+            intercalate " "
+                ["L", show (fromRational x), show (fromRational y)]
+
+        E.PDArc (E.Arc (Tagged r) (E.Point (Tagged x) (Tagged y)) l s) ->
+            intercalate " "
+                [ "A", show r, show r, "0", flag l, flag s
+                , show (fromRational x), show (fromRational y)]
+
+        E.PDClose (E.Close) -> "Z"
+    where
+        flag True = "1"
+        flag False = "0"
+        
+
 
 attr :: String -> String -> Attribute
 attr n v = (N n, AttValue [Left v])

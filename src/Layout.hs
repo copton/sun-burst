@@ -70,13 +70,16 @@ layoutNodeNoLeaves config layer open close alpha (Node label size _) = (sector, 
         sector = Sector label start end
 
 layoutLeaves :: Config -> Layer -> Angle -> Angle -> [Node] -> [Sector]
-layoutLeaves config layer open close = snd . foldr go (open, []) . reverse
+layoutLeaves config layer open close = align . snd . foldr go (open, []) . reverse
     where
         go node (alpha, ss) =
             let (sector, beta) = layoutNodeNoLeaves config layer open close alpha node
                 leaveSectors = layoutLeaves config (layer + 1) alpha beta (nodeLeaves node)
             in
                 (beta, sector : ss ++ leaveSectors)
+
+        align [] = []
+        align (Sector l s (PolarCoordinates _ r): ss) = Sector l s (PolarCoordinates close r) : ss
 
 nodeSizeToAngle :: Angle -> Angle -> RelSize -> Angle
 nodeSizeToAngle (Tagged open) (Tagged close) (Tagged size) = Tagged $
