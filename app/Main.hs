@@ -13,9 +13,9 @@ import System.IO(withFile, IOMode(WriteMode), hPutStr)
 model :: RootNode
 model =
     RootNode $ Node "center" (Tagged 100)
-        [ Node "left" (Tagged 30) []
-        , Node "right" (Tagged 30) []
-        , Node "up" (Tagged 40)
+        [ Node "1" (Tagged 10) []
+        , Node "2" (Tagged 30) []
+        , Node "3" (Tagged 60)
             [ Node "a" (Tagged 10) []
             , Node "b" (Tagged 60) []
             , Node "c" (Tagged 30) []

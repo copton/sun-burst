@@ -47,8 +47,7 @@ data Circle = Circle
 
 data Text = Text
     { textText  :: T.Text
-    , textPoint :: Point
-    , textPath  :: Maybe (Label, Path)
+    , textPath  :: Path
     }
 
 data Path = Path
@@ -100,7 +99,13 @@ largeArcFlag (L.Sector _ start end) =
     L.polarAngle end - L.polarAngle start > 180
 
 sectorElements :: L.Sector -> [Element]
-sectorElements sector@(L.Sector label start end) = [EPath path]
+sectorElements sector =
+    [ sectorArcs sector
+    , sectorText sector
+    ]
+
+sectorArcs :: L.Sector -> Element
+sectorArcs sector@(L.Sector label start end) = EPath path
     where
         path     = Path [move, innerArc, line, outerArc, close]
         move     = PDMove $ Move (polarToCartesian start)
@@ -117,8 +122,23 @@ sectorElements sector@(L.Sector label start end) = [EPath path]
                                 False
         close = PDClose Close
 
+sectorText :: L.Sector -> Element
+sectorText (L.Sector label start end) = EText $ Text label path
+    where
+        path = Path [move, line]
+        move = PDMove $ Move $ polarToCartesian $ L.PolarCoordinates gamma r
+        line = PDLine $ Line $ polarToCartesian $ L.PolarCoordinates gamma s
+        (L.PolarCoordinates alpha r) = start
+        (L.PolarCoordinates beta  s) = end
+        gamma = (alpha + beta) `div` 2
+
 centerElements :: L.Center -> [Element]
 centerElements (L.Center label radius) =
-    [ ECircle $ Circle (Tagged (unTagged radius))
-    , EText $ Text label (Point (Tagged 0) (Tagged 0)) Nothing
-    ]
+        [ ECircle $ Circle (Tagged (unTagged radius))
+        , EText text 
+        ]
+    where
+        text = Text label path
+        path = Path [move, line]
+        move = PDMove $ Move $ polarToCartesian $ L.PolarCoordinates (Tagged 180) radius
+        line = PDLine $ Line $ polarToCartesian $ L.PolarCoordinates (Tagged   0) radius

@@ -6,6 +6,7 @@ module SvgXml
 import qualified SvgElements as E
 
 import Data.List (intercalate)
+import Data.Maybe (mapMaybe)
 import Data.Tagged (Tagged(Tagged, unTagged))
 import Text.XML.HaXml.Types
 import Text.XML.HaXml.Pretty (document)
@@ -15,6 +16,9 @@ import qualified Data.Text as T
 
 toXml :: [E.Element] -> String
 toXml = render . document . xml
+
+index :: [a] -> [(Int, a)]
+index xs = zip [1..] xs
 
 xml :: [E.Element] -> Document ()
 xml elements = Document prolog [] (root elements) []
@@ -42,15 +46,17 @@ root elements = Elem (N "svg") attrs [body elements]
         halfSize = size `div` 2
 
 body :: [E.Element] -> Content ()
-body elements = group (map element elements)
+body elements = group
     where   
-        group es = CElem (Elem (N "g") [trans] es) ()
-        trans = attr "transform" "scale(1, -1)"
-
-element :: E.Element -> Content ()
-element = \case
+        group = CElem (Elem (N "g") [] (defs : drawings)) ()
+        indexedElements = zip [1..] elements
+        defs = CElem (Elem (N "defs") [] (mapMaybe elemTextPath indexedElements)) ()
+        drawings = map element indexedElements
+        
+element :: (Int, E.Element) -> Content ()
+element (idx, e )= case e of
     E.ECircle x -> CElem (elemCircle x) ()
-    E.EText x -> CElem (elemText x) ()
+    E.EText x -> CElem (elemText idx x) ()
     E.EPath x -> CElem (elemPath x) ()
 
 elemCircle :: E.Circle -> Element ()
@@ -64,14 +70,34 @@ elemCircle (E.Circle (Tagged r)) =
         s  = attr "stroke" "black"
         f  = attr "fill" "none"
 
-elemText :: E.Text -> Element ()
-elemText (E.Text txt (E.Point (Tagged x) (Tagged y)) Nothing) =
-        Elem (N "text") [x', y', a, t] [CString False (T.unpack txt) ()]
+elemText :: Int -> E.Text -> Element ()
+elemText idx text =
+        Elem (N "g") [] [CElem eu (), CElem et ()]
     where
-        x' = attr "x" (show $ fromRational x)
-        y' = attr "y" (show $ fromRational y)
+        et = Elem (N "text") [a] [CElem path ()]
         a = attr "text-anchor" "middle"
-        t = attr "transform" "scale(1, -1)"
+        path = Elem (N "textPath") [o, l] [txt']
+        (E.Text txt _) = text
+        txt' = CString False (T.unpack txt) ()
+        o = attr "startOffset" "50%"
+        l = attr "xlink:href" (href False idx)
+
+        eu = Elem (N "use") [l, s, f] [] -- for debugging only
+        f = attr "fill" "none"
+        s = attr "stroke" "red"
+        
+href :: Bool -> Int -> String
+href isDef idx = hash <> "path" <> show idx
+    where   
+        hash = if isDef then "" else "#"
+
+elemTextPath :: (Int, E.Element) -> Maybe (Content ())
+elemTextPath (idx, E.EText (E.Text _ (E.Path pd))) = Just $ CElem textPath ()
+    where
+        textPath = Elem (N "path") [i, d] []
+        i = attr "id" (href True idx)
+        d = attr "d" $ intercalate " " $ map pathData pd
+elemTextPath _ = Nothing
 
 elemPath :: E.Path -> Element ()
 elemPath (E.Path pd) =
@@ -101,8 +127,6 @@ pathData = \case
     where
         flag True = "1"
         flag False = "0"
-        
-
 
 attr :: String -> String -> Attribute
 attr n v = (N n, AttValue [Left v])
@@ -112,7 +136,7 @@ viewBox = maximum . concatMap viewBoxElement
     where
         viewBoxElement = \case
             E.ECircle (E.Circle (Tagged radius)) -> [radius]
-            E.EText _ -> []
+            E.EText (E.Text _ (E.Path d)) -> concatMap viewBoxPathData d
             E.EPath (E.Path d) -> concatMap viewBoxPathData d
         
         viewBoxPathData = \case
