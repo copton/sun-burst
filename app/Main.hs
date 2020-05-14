@@ -6,6 +6,8 @@ import Layout
 import SvgElements
 import SvgXml
 
+import System.Process (proc, withCreateProcess, StdStream(CreatePipe), CreateProcess(std_in, std_out))
+import System.IO (hGetContents, hClose)
 import Data.Tagged (Tagged(Tagged))
 import qualified Data.Text as T
 import System.IO(withFile, IOMode(WriteMode), hPutStr)
@@ -41,5 +43,10 @@ assert (Right x) = return x
 main :: IO ()
 main = do
     assert $ assertRootNodeConsistency model
-    withFile "/tmp/e.svg" WriteMode $ \h -> do
-        hPutStr h xmlString
+    let p = (proc "xmlstarlet" ["fo", "-"]){std_in = CreatePipe, std_out = CreatePipe}
+    withCreateProcess p $ \ (Just hIn) (Just hOut) _ _ -> do
+        hPutStr hIn xmlString
+        hClose hIn
+        xmlString' <- hGetContents hOut
+        withFile "/tmp/e.svg" WriteMode $ \h -> do
+            hPutStr h xmlString' 

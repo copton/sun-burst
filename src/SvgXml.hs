@@ -14,6 +14,9 @@ import Text.XML.HaXml (render)
 import Text.Printf (printf)
 import qualified Data.Text as T
 
+debug :: Bool
+debug = True
+
 toXml :: [E.Element] -> String
 toXml = render . document . xml
 
@@ -72,7 +75,11 @@ elemCircle (E.Circle (Tagged r)) =
 
 elemText :: Int -> E.Text -> Element ()
 elemText idx text =
-        Elem (N "g") [] [CElem eu (), CElem et ()]
+        if debug
+            then
+                Elem (N "g") [] [CElem eu (), CElem et ()]
+            else
+                et
     where
         et = Elem (N "text") [a] [CElem path ()]
         a = attr "text-anchor" "middle"

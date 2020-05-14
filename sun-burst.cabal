@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 202d08df30572a5cdcb9c23b0f382ed0a3752c32d6800c2fac6a81616ccf8f65
+-- hash: 864208bbd1a7cf7daacfdbc4a9afe557186f60109b64b52b80f335d754162292
 
 name:           sun-burst
 version:        0.1.0.0
@@ -52,6 +52,7 @@ executable sun-burst-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , process ==1.6.*
     , sun-burst
     , tagged ==0.8.*
     , text ==1.2.*
