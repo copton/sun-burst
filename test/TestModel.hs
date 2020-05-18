@@ -5,7 +5,7 @@ module TestModel (
 ) where
 
 import Test.Tasty
-import Test.Tasty.HUnit
+import Test.Tasty.HUnit hiding (assert)
 
 import qualified Data.Text as T
 

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 864208bbd1a7cf7daacfdbc4a9afe557186f60109b64b52b80f335d754162292
+-- hash: f922380bdcde945a4dfda637827464aaf15383dcfd490c59a8afa6faca699cdd
 
 name:           sun-burst
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       Paths_sun_burst
   hs-source-dirs:
       src
+  ghc-options: -Wall -Werr
   build-depends:
       HaXml ==1.25.*
     , base >=4.7 && <5

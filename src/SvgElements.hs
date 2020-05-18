@@ -2,7 +2,7 @@
 module SvgElements
     ( sunBurstElements
     , Point(..)
-    , Offset(..)
+    , Offset
     , Element(..)
     , Circle(..)
     , Text(..)
@@ -23,9 +23,6 @@ import Data.Ratio ((%))
 
 data OffsetTag
 type Offset = Tagged OffsetTag Rational
-
-data LabelTag
-type Label = Tagged LabelTag T.Text
 
 data RadiusTag
 type Radius = Tagged RadiusTag Int
@@ -86,7 +83,7 @@ polarToCartesian :: L.PolarCoordinates -> Point
 polarToCartesian (L.PolarCoordinates (Tagged angle) (Tagged radius)) =
         Point x y
     where
-        radian = (fromIntegral angle) * pi / 180.0
+        radian = (fromIntegral angle) * pi / (180.0 :: Double)
         x = Tagged $ (fromIntegral radius) * (floatingToRational (cos radian))
         y = Tagged $ (fromIntegral radius) * (floatingToRational (sin radian))
 
@@ -105,7 +102,7 @@ sectorElements sector =
     ]
 
 sectorArcs :: L.Sector -> Element
-sectorArcs sector@(L.Sector label start end) = EPath path
+sectorArcs sector@(L.Sector _ start end) = EPath path
     where
         path     = Path [move, innerArc, line, outerArc, close]
         move     = PDMove $ Move (polarToCartesian start)
@@ -125,11 +122,20 @@ sectorArcs sector@(L.Sector label start end) = EPath path
 sectorText :: L.Sector -> Element
 sectorText (L.Sector label start end) = EText $ Text label path
     where
+        (L.PolarCoordinates alpha r) = start
+        (L.PolarCoordinates beta  s) = end
+
+        {-
+        t = (r + s) `div` 2
+        end = L.PolarCoordinates beta t
+
+        path = Path [move]
+        move = PDMove $ Move $ polarToCartesian $ L.PolarCoordinates alpha r
+        arc = PDArc $ Arc (Tagged $ unTagged t) (polarToCartesian end) (largeArcFlag sector) True
+        -}
         path = Path [move, line]
         move = PDMove $ Move $ polarToCartesian $ L.PolarCoordinates gamma r
         line = PDLine $ Line $ polarToCartesian $ L.PolarCoordinates gamma s
-        (L.PolarCoordinates alpha r) = start
-        (L.PolarCoordinates beta  s) = end
         gamma = (alpha + beta) `div` 2
 
 centerElements :: L.Center -> [Element]

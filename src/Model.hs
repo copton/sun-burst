@@ -12,7 +12,7 @@ module Model (
 import qualified Data.Text as T
 import Control.Monad.Except(throwError)
 import Control.Monad (forM_, when)
-import Data.Tagged(Tagged(Tagged, unTagged))
+import Data.Tagged(Tagged)
 
 newtype RootNode = RootNode { getRootNode :: Node }
 

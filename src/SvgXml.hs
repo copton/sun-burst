@@ -7,7 +7,7 @@ import qualified SvgElements as E
 
 import Data.List (intercalate)
 import Data.Maybe (mapMaybe)
-import Data.Tagged (Tagged(Tagged, unTagged))
+import Data.Tagged (Tagged(Tagged))
 import Text.XML.HaXml.Types
 import Text.XML.HaXml.Pretty (document)
 import Text.XML.HaXml (render)
@@ -19,9 +19,6 @@ debug = True
 
 toXml :: [E.Element] -> String
 toXml = render . document . xml
-
-index :: [a] -> [(Int, a)]
-index xs = zip [1..] xs
 
 xml :: [E.Element] -> Document ()
 xml elements = Document prolog [] (root elements) []
@@ -119,16 +116,24 @@ pathData :: E.PathData -> String
 pathData = \case
         E.PDMove (E.Move (E.Point (Tagged x) (Tagged y))) ->
             intercalate " "
-                ["M", show (fromRational x), show (fromRational y)]
+                ["M"
+                , show ((fromRational x) :: Double)
+                , show ((fromRational y) :: Double)
+                ]
 
         E.PDLine (E.Line (E.Point (Tagged x) (Tagged y))) ->
             intercalate " "
-                ["L", show (fromRational x), show (fromRational y)]
+                ["L"
+                , show ((fromRational x) :: Double)
+                , show ((fromRational y) :: Double)
+                ]
 
         E.PDArc (E.Arc (Tagged r) (E.Point (Tagged x) (Tagged y)) l s) ->
             intercalate " "
                 [ "A", show r, show r, "0", flag l, flag s
-                , show (fromRational x), show (fromRational y)]
+                , show ((fromRational x) :: Double)
+                , show ((fromRational y) :: Double)
+                ]
 
         E.PDClose (E.Close) -> "Z"
     where
@@ -154,4 +159,4 @@ viewBox = maximum . concatMap viewBoxElement
 
         viewBoxPoint (E.Point (Tagged x) (Tagged y)) = [ceiling' x, ceiling' y]
 
-        ceiling' = ceiling . fromRational
+        ceiling' x = ceiling ((fromRational x) :: Double)

@@ -7,8 +7,7 @@ module TestSvgElements (
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import qualified Data.Text as T
-import Data.Tagged (Tagged(Tagged, unTagged))
+import Data.Tagged (Tagged(Tagged))
 
 import qualified Layout as L
 import qualified SvgElements as S
